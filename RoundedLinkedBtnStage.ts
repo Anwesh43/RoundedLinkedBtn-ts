@@ -1,4 +1,4 @@
-const w : number = window.innerWidth, h = window.innerHeight
+const w : number = window.innerWidth, h : number = window.innerHeight, RLB_NODES = 5
 
 class RoundedLinkedBtnStage {
 
@@ -83,4 +83,68 @@ class Animator {
         }
     }
 
+}
+
+class RLBNode {
+
+    prev : RLBNode
+
+    next : RLBNode
+
+    state : State = new State()
+
+    constructor(private i : number) {
+        this.addNeighbor()
+    }
+
+    draw(context : CanvasRenderingContext2D) {
+        const gap : number = (w / RLB_NODES)
+        const r : number = gap / 10
+        const draw180Arc = (ax, start, started) => {
+            for (var i = start; i <= start + 180; i++) {
+                const x : number = ax + r * Math.cos(i * Math.PI/180), y : number = r * Math.sin(i * Math.PI/180)
+                if (i == start && started) {
+                    context.moveTo(x, y)
+                }
+                else {
+                    context.lineTo(x, y)
+                }
+            }
+        }
+        context.save()
+        context.translate(this.i * (gap), h/2)
+        context.beginPath()
+        draw180Arc(r + (w - 2 * r) * this.state.scales[1], 90, true)
+        draw180Arc(r + (w - 2 * r) * this.state.scales[1], 270, false)
+        context.fill()
+        context.restore()
+    }
+
+    addNeighbor() {
+        if (this.i < RLB_NODES - 1) {
+            const curr = new RLBNode(this.i + 1)
+            this.next = curr
+            curr.prev = this
+        }
+    }
+
+    update(stopcb : Function) {
+        this.state.update(stopcb)
+    }
+
+    startUpdating(startcb : Function) {
+        this.state.update(startcb)
+    }
+
+    getNext(dir, cb) {
+        var curr : RLBNode = this.prev
+        if (dir == 1) {
+            curr = this.next
+        }
+        if (curr) {
+            return curr
+        }
+        cb()
+        return this
+    }
 }
