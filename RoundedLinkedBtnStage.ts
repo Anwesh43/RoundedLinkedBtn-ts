@@ -6,6 +6,10 @@ class RoundedLinkedBtnStage {
 
     context : CanvasRenderingContext2D
 
+    roundedLinkedBtn : RoundedLinkedBtn = new RoundedLinkedBtn()
+
+    animator : Animator = new Animator()
+
     constructor() {
         this.initCanvas()
     }
@@ -20,10 +24,20 @@ class RoundedLinkedBtnStage {
     render() {
         this.context.fillStyle = '#212121'
         this.context.fillRect(0, 0, w, h)
+        this.roundedLinkedBtn.draw(this.context)
     }
 
     handleTap() {
-
+        this.canvas.onmousedown = () =>  {
+            this.roundedLinkedBtn.startUpdating(() => {
+                this.animator.start(() => {
+                    this.render()
+                    this.roundedLinkedBtn.update(() => {
+                        this.animator.stop()
+                    })
+                })
+            })
+        }
     }
 
     static init() {
