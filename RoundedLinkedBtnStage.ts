@@ -55,6 +55,7 @@ class State {
 
     update(stopcb : Function) {
         this.scales[this.j] += this.dir * 0.1
+        console.log(this.scales)
         if (Math.abs(this.scales[this.j] - this.prevScale) > 1) {
             this.scales[this.j] = this.prevScale + this.dir
             this.j += this.dir
@@ -112,6 +113,7 @@ class RLBNode {
     }
 
     draw(context : CanvasRenderingContext2D) {
+        context.fillStyle = '#FFD54F'
         const gap : number = (w / RLB_NODES)
         const r : number = gap / 10
         const draw180Arc = (ax, start, started) => {
@@ -128,8 +130,8 @@ class RLBNode {
         context.save()
         context.translate(this.i * (gap), h/2)
         context.beginPath()
-        draw180Arc(r + (w - 2 * r) * this.state.scales[1], 90, true)
-        draw180Arc(r + (w - 2 * r) * this.state.scales[1], 270, false)
+        draw180Arc(r + (gap) * this.state.scales[1], 90, true)
+        draw180Arc(r + (gap) * this.state.scales[0], 270, false)
         context.fill()
         context.restore()
     }
@@ -147,7 +149,7 @@ class RLBNode {
     }
 
     startUpdating(startcb : Function) {
-        this.state.update(startcb)
+        this.state.startUpdating(startcb)
     }
 
     getNext(dir, cb) {
